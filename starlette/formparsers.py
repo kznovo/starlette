@@ -98,8 +98,8 @@ class FormParser:
                 elif message_type == FormMessage.FIELD_DATA:
                     field_value += message_bytes
                 elif message_type == FormMessage.FIELD_END:
-                    name = unquote_plus(field_name.decode("latin-1"))
-                    value = unquote_plus(field_value.decode("latin-1"))
+                    name = unquote_plus(field_name.decode("utf-8"))
+                    value = unquote_plus(field_value.decode("utf-8"))
                     items.append((name, value))
                 elif message_type == FormMessage.END:
                     pass
@@ -202,9 +202,9 @@ class MultiPartParser:
                     content_disposition = headers.get("Content-Disposition")
                     content_type = headers.get("Content-Type", "")
                     disposition, options = parse_options_header(content_disposition)
-                    field_name = options[b"name"].decode("latin-1")
+                    field_name = options[b"name"].decode("utf-8")
                     if b"filename" in options:
-                        filename = options[b"filename"].decode("latin-1")
+                        filename = options[b"filename"].decode("utf-8")
                         file = UploadFile(filename=filename, content_type=content_type)
                     else:
                         file = None
@@ -215,7 +215,7 @@ class MultiPartParser:
                         await file.write(message_bytes)
                 elif message_type == MultiPartMessage.PART_END:
                     if file is None:
-                        items.append((field_name, data.decode("latin-1")))
+                        items.append((field_name, data.decode("utf-8")))
                     else:
                         await file.seek(0)
                         items.append((field_name, file))
